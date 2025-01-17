@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            text-align: center;
+            z-index: 1;
+            text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.7);
+            white-space: normal;
+            width: 80%;
+            line-height: 1.5;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                width: 95%;
+            }
+
+            #nextButton {
+                font-size: 1.2rem;
+                padding: 8px 16px;
+            }
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #nextButton {
+            display: none;
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            background-color: #ff4500;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        #nextButton:hover {
+            background-color: #ff6347;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="message">Wszystkiego najlepszego</h1>
+    <button id="nextButton">Dalej</button>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const nextButton = document.getElementById('nextButton');
+        const message = document.getElementById('message');
+
+        const messages = [
+            'Wszystkiego najlepszego!!!',
+            'Bardzo dużo zdrowia, szczęścia i radości!!',
+            'Spełaniaj marzenia!!',
+            'Niech twój każdy dzień będzie przynosił uśmiech na twarzy!!',
+            'Niech jedyne łzy jakei będą sływac ci po policzkach to będą łzy szczęścia',
+            'Nie wątp w siebie i swoje umiejętności',
+            'Pamiętaj że nie jesteś z tym wszystkim sam'
+
+        ];
+        let currentMessageIndex = 0;
+
+        class Firework {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 2;
+                this.life = 100;
+                this.dx = (Math.random() - 0.5) * 6;
+                this.dy = (Math.random() - 0.5) * 6;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+                this.life--;
+            }
+        }
+
+        const fireworks = [];
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height / 2;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            for (let i = 0; i < 50; i++) {
+                fireworks.push(new Firework(x, y, color));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const firework = fireworks[i];
+                firework.update();
+                firework.draw();
+                if (firework.life <= 0) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(createFirework, 500);
+        animate();
+
+        setTimeout(() => {
+            nextButton.style.display = 'block';
+        }, 3000);
+
+        nextButton.addEventListener('click', () => {
+            currentMessageIndex++;
+            if (currentMessageIndex < messages.length) {
+                message.textContent = '';
+                setTimeout(() => {
+                    message.textContent = messages[currentMessageIndex];
+                }, 100);
+            } else {
+                message.textContent = 'KOCHAM CIĘ <3';
+                nextButton.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
